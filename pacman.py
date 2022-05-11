@@ -134,16 +134,23 @@ def move():
         if valid(point + course):
             point.move(course)
         else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
+            options = []
+            if (point.x - pacman.x) < 0:
+                options.append(vector(5, 0)) # Pacman is more to the right ->
+            elif (point.x - pacman.x) > 0:
+                options.append(vector(-5, 0)) # Pacman is more to the left <-
+            if (point.y - pacman.y) < 0:
+                options.append(vector(0,-5)) # Pacman is downwards
+            elif (point.y - pacman.y) > 0:
+                options.append(vector(0, 5)) # Pacman is upwards
+            plan = choice(options) # add the choices to the plan to plot the next course of the ghost
             course.x = plan.x
             course.y = plan.y
-
+            if not valid(point + course):
+                options = [vector(5, 0), vector(-5, 0), vector(0, 5), vector(0, -5)]
+                plan = choice(options) # add the choices to the plan to plot the next course of the ghost
+                course.x = plan.x
+                course.y = plan.y
         up()
         goto(point.x + 10, point.y + 10)
         dot(20, 'red')
