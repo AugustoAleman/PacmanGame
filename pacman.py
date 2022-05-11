@@ -1,15 +1,13 @@
-"""Pacman, classic arcade game.
+"""
+GAME: Pacman.
+AUTHOR 1: Carla Onate Gardella.
+AUTHOR 2: Octavio Augusto Aleman Esparza.
 
-Exercises
+DATE: May - 11 - 2022.
 
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
 """
 
-from random import choice
+from random import choice, randrange
 from turtle import *
 
 from freegames import floor, vector
@@ -50,6 +48,39 @@ tiles = [
 ]
 # fmt: on
 
+tiles1 = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+]
+
+def boardSelector():
+    key = randrange(0, 2, 1)
+
+    global board
+
+    if(key == 1):
+        board = tiles
+    else:
+        board = tiles1
+
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -77,12 +108,14 @@ def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
 
-    if tiles[index] == 0:
+    global board
+
+    if board[index] == 0:
         return False
 
     index = offset(point + 19)
 
-    if tiles[index] == 0:
+    if board[index] == 0:
         return False
 
     return point.x % 20 == 0 or point.y % 20 == 0
@@ -93,8 +126,10 @@ def world():
     bgcolor('black')
     path.color('blue')
 
-    for index in range(len(tiles)):
-        tile = tiles[index]
+    global board
+
+    for index in range(len(board)):
+        tile = board[index]
 
         if tile > 0:
             x = (index % 20) * 20 - 200
@@ -119,8 +154,10 @@ def move():
 
     index = offset(pacman)
 
-    if tiles[index] == 1:
-        tiles[index] = 2
+    global board
+
+    if board[index] == 1:
+        board[index] = 2
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
@@ -171,6 +208,7 @@ def change(x, y):
         aim.y = y
 
 
+boardSelector()
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
