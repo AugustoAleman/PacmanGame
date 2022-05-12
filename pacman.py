@@ -7,10 +7,12 @@ DATE: May - 11 - 2022.
 
 """
 
-from random import choice, randrange
+from random import choice, randrange # The randrange function is also imported from the random library.
 from turtle import *
 
 from freegames import floor, vector
+
+import time # Time library has been imported in order to take time measures within the compilation of the code.
 
 state = {'score': 0}
 path = Turtle(visible=False)
@@ -48,7 +50,7 @@ tiles = [
 ]
 # fmt: on
 
-tiles1 = [
+tiles1 = [ # A second board has been added.
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -71,14 +73,14 @@ tiles1 = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
 
-def boardSelector():
-    key = randrange(0, 2, 1)
+def boardSelector(): # The boardSelector function was added to select randomly a board each time the game is started.
+    key = randrange(0, 2, 1) # The key variable saves which board is going to be used (1 or 2).
 
-    global board
+    global board # The variable board is declared as global.
 
-    if(key == 1):
+    if(key == 1): # If the variable key equals 1, board n. 1 will be used.
         board = tiles
-    else:
+    else: # If the variable key doesn't equal 1, board n. 2 will be used.
         board = tiles1
 
 
@@ -108,14 +110,14 @@ def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
 
-    global board
+    global board # The variable board is declared as global.
 
-    if board[index] == 0:
+    if board[index] == 0: # The variable (list) board indicates which board is being used.
         return False
 
     index = offset(point + 19)
 
-    if board[index] == 0:
+    if board[index] == 0: # The variable (list) board indicates which board is being used.
         return False
 
     return point.x % 20 == 0 or point.y % 20 == 0
@@ -126,10 +128,10 @@ def world():
     bgcolor('black')
     path.color('blue')
 
-    global board
+    global board # The variable board is declared as global.
 
-    for index in range(len(board)):
-        tile = board[index]
+    for index in range(len(board)): # The variable (list) board indicates which board is being used.
+        tile = board[index] # The variable (list) board indicates which board is being used.
 
         if tile > 0:
             x = (index % 20) * 20 - 200
@@ -141,6 +143,29 @@ def world():
                 path.goto(x + 10, y + 10)
                 path.dot(2, 'white')
 
+
+def takeTime(): # The takeTime() function has been added. This function declares and sets the initial values of the global variables necessary to take time measures.
+    global start # The variable start is declared as global.
+    start = time.time() # The variable start is given the initial value of the current time.
+
+    global speedGhosts # The variable speedGhosts is declared as global.
+    speedGhosts = 5 # The variable speedGhosts is given its initial value.
+
+    global currentTime # The variable currentTime is declared as global.
+    currentTime = 0.0 # The variable currentTime is given its initial value.
+
+def adjustSpeed(): # The function adjustSpeed() has been added. Its purpose is to increase the Ghost's speed every time a 20 second interval passes. 
+
+    global currentTime, speedGhosts, start # The necessary variables are declared as global. 
+
+    currentTime = time.time() # The current time measure is saved in the currentTime variable.
+
+    dif = (currentTime - start) # The difference between the saved start time measure and current time measure is calculated.
+
+    if dif >= 20.0 and speedGhosts < 10: # If the difference between both time measures is equal or greater than 20 (seconds) and the current speed of the Ghosts is smaller than 10, the function will run the following code.
+        speedGhosts = speedGhosts + 1 # The speed of the Ghosts is increased in 1. 
+
+        start = time.time() # The start variable is given a new value, now measuring the time passed since the last time the speed was increased.
 
 def move():
     """Move pacman and all ghosts."""
@@ -154,14 +179,16 @@ def move():
 
     index = offset(pacman)
 
-    global board
+    global board, speedGhosts # The board and speedGhosts variables are declared as global.
 
-    if board[index] == 1:
-        board[index] = 2
+    if board[index] == 1: # The variable (list) board indicates which board is being used.
+        board[index] = 2 # The variable (list) board indicates which board is being used.
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
         square(x, y)
+
+    adjustSpeed()  # The adjustSpeed() function is called.
 
     up()
     goto(pacman.x + 10, pacman.y + 10)
@@ -173,18 +200,18 @@ def move():
         else:
             options = []
             if (point.x - pacman.x) < 0:
-                options.append(vector(5, 0)) # Pacman is more to the right ->
+                options.append(vector(speedGhosts, 0)) # Pacman is more to the right -> # The speed of the Ghosts is asiggned through the speedGhosts variable.
             elif (point.x - pacman.x) > 0:
-                options.append(vector(-5, 0)) # Pacman is more to the left <-
+                options.append(vector(-speedGhosts, 0)) # Pacman is more to the left <- # The speed of the Ghosts is asiggned through the speedGhosts variable.
             if (point.y - pacman.y) < 0:
-                options.append(vector(0,-5)) # Pacman is downwards
+                options.append(vector(0,-speedGhosts)) # Pacman is downwards # The speed of the Ghosts is asiggned through the speedGhosts variable.
             elif (point.y - pacman.y) > 0:
-                options.append(vector(0, 5)) # Pacman is upwards
+                options.append(vector(0, speedGhosts)) # Pacman is upwards # The speed of the Ghosts is asiggned through the speedGhosts variable.
             plan = choice(options) # add the choices to the plan to plot the next course of the ghost
             course.x = plan.x
             course.y = plan.y
             if not valid(point + course):
-                options = [vector(5, 0), vector(-5, 0), vector(0, 5), vector(0, -5)]
+                options = [vector(speedGhosts, 0), vector(-speedGhosts, 0), vector(0, speedGhosts), vector(0, -speedGhosts)] # The speed of the Ghosts is asiggned through the speedGhosts variable.
                 plan = choice(options) # add the choices to the plan to plot the next course of the ghost
                 course.x = plan.x
                 course.y = plan.y
@@ -208,7 +235,7 @@ def change(x, y):
         aim.y = y
 
 
-boardSelector()
+boardSelector() # The boardSelector function is called.
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
@@ -221,5 +248,6 @@ onkey(lambda: change(-5, 0), 'Left')
 onkey(lambda: change(0, 5), 'Up')
 onkey(lambda: change(0, -5), 'Down')
 world()
+takeTime() # The takeTime() function is called.
 move()
 done()
